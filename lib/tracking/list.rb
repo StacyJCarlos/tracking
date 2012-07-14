@@ -66,17 +66,42 @@ module Tracking
 			case format
 			when :colons
 				elapsed = ""
-				elapsed += "%02d:" % days if days
 				elapsed += "%02d:" % hours if hours
-				elapsed += "%02d:" % minutes if minutes
-				elapsed += "%02d" % seconds if seconds
+				if $config[:show_elapsed_seconds]
+					elapsed += "%02d:" % minutes if minutes
+				else
+				end
+				if seconds
+					elapsed += "%02d" % seconds if $config[:show_elapsed_seconds]
+					if minutes
+						elapsed += "%02d" % minutes + $config[:show_elapsed_seconds] ? " " : ""
+						if hours
+							elapsed += "#{hours.to_s}h "
+							if days
+								elapsed += "%02d:" % days
+							end
+						end
+					elsif seconds == 0
+						elapsed = ""
+					end
+				end
 				return elapsed
 			when :letters
 				elapsed = ""
-				elapsed += "#{days.to_s}d " if days
-				elapsed += "#{hours.to_s}h " if hours
-				elapsed += "#{minutes.to_s}m " if minutes
-				elapsed += "#{seconds.to_s}s" if seconds
+				if seconds
+					elapsed += "#{seconds.to_s}s" if $config[:show_elapsed_seconds]
+					if minutes
+						elapsed += "#{minutes.to_s}m" + $config[:show_elapsed_seconds] ? " " : ""
+						if hours
+							elapsed += "#{hours.to_s}h "
+							if days
+								elapsed += "#{days.to_s}d "
+							end
+						end
+					elsif seconds == 0
+						elapsed = ""
+					end
+				end
 				return elapsed
 			end
 		end
