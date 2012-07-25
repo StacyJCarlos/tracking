@@ -2,6 +2,8 @@
 
 #imports
 require "optparse"
+require "csv"
+require "fastercsv"
 
 #view module methods
 module Tracking
@@ -30,10 +32,11 @@ EOF
 			data = []
 			valid_lines = 0
 			invalid_lines = 0
-			data_file = CSV.open($data_file, "r", $csv_options)
+			csv = List.get_csv_lib
+			data_file = csv.open($data_file, "r", $csv_options)
 			file_length = data_file.readlines.size
 			data_file.seek(0)
-			data_file.each_with_index do |line, index=0|
+			data_file.each_with_index do |line, index|
 				if index+1 > file_length - Config[:lines]
 					data << line
 				end

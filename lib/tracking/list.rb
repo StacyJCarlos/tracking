@@ -4,6 +4,7 @@
 require "yaml"
 require "time"
 require "csv"
+require "fastercsv"
 
 #model/controller module methods
 module Tracking
@@ -18,8 +19,9 @@ module Tracking
 		#adds an item to the list
 		def add item
 			date = Time.now.to_s
+			csv = get_csv_lib
 			File.open($data_file, "a") do |file|
-					file << [ date, item ].to_csv($csv_options)
+					file << csv.generate_line([ date, item ], $csv_options)
 			end
 		end
 
@@ -27,9 +29,10 @@ module Tracking
 		def delete
 			lines = File.readlines $data_file
 			lines.pop #or delete specific lines in the future
-			CSV.open($data_file, "w", $csv_options) do |file| 
+			csv = get_csv_lib
+			csv.open($data_file, "w", $csv_options) do |file| 
 				lines.each do |line|
-					file.puts line
+					file.puts [ line ]
 				end
 			end
 		end
@@ -71,6 +74,15 @@ module Tracking
 				else
 					return "%02dd %02dh %02dm" % [days, hours, minutes]
 				end
+			end
+		end
+
+		#grabs the right CSV lib for the current version of Ruby
+		def get_csv_lib
+			if CSV.const_defined? :Reader
+				return FasterCSV
+			else
+				return CSV
 			end
 		end
 
