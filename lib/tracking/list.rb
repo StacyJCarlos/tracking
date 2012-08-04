@@ -1,10 +1,10 @@
-#Tracking's core.
+#tracking's core
 
 #imports
-require "yaml"
-require "time"
-require "csv"
-require "fastercsv"
+require 'yaml'
+require 'time'
+require 'csv'
+require 'fastercsv'
 
 #model/controller module methods
 module Tracking
@@ -12,15 +12,23 @@ module Tracking
 
 		extend self
 
-		Config = YAML.load_file(ENV["HOME"] + "/.tracking/config.yml")
+		Config = YAML.load_file(ENV['HOME'] + '/.tracking/config.yml')
 		$data_file = File.expand_path(Config[:data_file])
 		$csv_options = { :col_sep => "\t" }
+
+		#read and convert part of the data file into 2D lists
+		#@return a list of lists
+		def get
+			tasks = CSV.read($data_file, $csv_options)
+			tasks = tasks[-Config[:lines]..-1] if tasks.length > Config[:lines]
+			return tasks
+		end
 
 		#adds an item to the list
 		def add item
 			date = Time.now.to_s
 			csv = get_csv_lib
-			File.open($data_file, "a") do |file|
+			File.open($data_file, 'a') do |file|
 					file << csv.generate_line([ date, item ], $csv_options)
 			end
 		end
@@ -29,10 +37,9 @@ module Tracking
 		def delete
 			lines = File.readlines $data_file
 			lines.pop #or delete specific lines in the future
-			csv = get_csv_lib
-			csv.open($data_file, "w", $csv_options) do |file| 
+			File.open($data_file, 'w') do |file| 
 				lines.each do |line|
-					file.puts [ line ]
+					file << line
 				end
 			end
 		end
@@ -64,15 +71,15 @@ module Tracking
 			case Config[:elapsed_format]
 			when :colons
 				if Config[:show_elapsed_seconds]
-					return "%02d:%02d:%02d:%02d" % [days, hours, minutes, seconds]
+					return '%02d:%02d:%02d:%02d' % [days, hours, minutes, seconds]
 				else
-					return "%02d:%02d:%02d" % [days, hours, minutes]
+					return '%02d:%02d:%02d' % [days, hours, minutes]
 				end
 			when :letters
 				if Config[:show_elapsed_seconds]
-					return "%02dd %02dh %02dm %02ds" % [days, hours, minutes, seconds]
+					return '%02dd %02dh %02dm %02ds' % [days, hours, minutes, seconds]
 				else
-					return "%02dd %02dh %02dm" % [days, hours, minutes]
+					return '%02dd %02dh %02dm' % [days, hours, minutes]
 				end
 			end
 		end

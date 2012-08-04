@@ -6,7 +6,7 @@ begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
   $stderr.puts e.message
-  $stderr.puts "Run `bundle install` to install missing gems"
+  $stderr.puts 'Run `bundle install` to install missing gems'
   exit e.status_code
 end
 require 'rake'
@@ -14,13 +14,13 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "tracking"
-  gem.homepage = "http://github.com/thenickperson/tracking"
-  gem.license = "MIT"
-  gem.summary = "A simple and configurable command line time tracker."
-  gem.description = "See README for more information."
-  gem.email = "thenickperson@gmail.com"
-  gem.authors = ["Nicolas McCurdy"]
+  gem.name = 'tracking'
+  gem.homepage = 'http://github.com/thenickperson/tracking'
+  gem.license = 'MIT'
+  gem.summary = 'A simple and configurable command line time tracker.'
+  gem.description = 'See README for more information.'
+  gem.email = 'thenickperson@gmail.com'
+  gem.authors = ['Nicolas McCurdy']
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
@@ -32,20 +32,13 @@ Rake::TestTask.new(:test) do |test|
   test.verbose = true
 end
 
-desc "Code coverage detail"
+desc 'Code coverage detail'
 task :simplecov do
-	ENV['COVERAGE'] = "true"
+	ENV['COVERAGE'] = 'true'
 	Rake::Task['spec'].execute
 end
 
 task :default => :test
 
-require 'rdoc/task'
-Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "tracking #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end
+require 'yard'
+YARD::Rake::YardocTask.new
